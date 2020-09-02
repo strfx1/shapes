@@ -1,2 +1,8 @@
 /Library/
-
+*.suo
+Assembly-*.csproj
+Assembly-*.unityproj
+iOS/
+Temp
+obj/
+shapes.sln
