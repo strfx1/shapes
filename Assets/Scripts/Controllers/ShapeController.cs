@@ -21,12 +21,18 @@ public class ShapeController : MonoBehaviour
                                               new Vector2(-1, 1),
                                               new Vector2(1, 1),
                                               new Vector2(1, -1)};
+    private Vector2[] pentagon = new Vector2[] {new Vector2(-1, 0.33f),
+                                                new Vector2(0, 1),
+                                                new Vector2(1, 0.33f),
+                                                new Vector2(0.6f, -0.8f),
+                                                new Vector2(-0.6f, -0.8f)};
 
-    private enum ShapeType
+    public enum ShapeType
     {
         Hexagon,
         Triangle,
         Square,
+        Pentagon,
     }
     #endregion
 
@@ -46,6 +52,7 @@ public class ShapeController : MonoBehaviour
         Vertices.Add(ShapeType.Hexagon, hexagon);
         Vertices.Add(ShapeType.Triangle, triangle);
         Vertices.Add(ShapeType.Square, square);
+        Vertices.Add(ShapeType.Pentagon, pentagon);
 
         // Create a hexagon to start.
         CreateShape(ShapeType.Hexagon);
@@ -60,24 +67,12 @@ public class ShapeController : MonoBehaviour
         trigger.triggers.Add(entry);*/
     }
 
-    public void CreateHexagon()
+    public void CreateShape(ShapeType shape)
     {
-        CreateShape(ShapeType.Hexagon);
-    }
+        // Make sure the shape is being shown.
+        ShapeObject.SetActive(true);
 
-    public void CreateTriangle()
-    {
-        CreateShape(ShapeType.Triangle);
-    }
-
-    public void CreateSquare()
-    {
-        CreateShape(ShapeType.Square);
-    }
-
-    private void CreateShape(ShapeType shape)
-    {
-        // Create our base hexagon.
+        // Create our base shape.
         var vertices = Array.ConvertAll<Vector2, Vector3>(Vertices[shape], v => v);
 
         // Use the triangulator to get indices for creating triangles.
@@ -123,6 +118,11 @@ public class ShapeController : MonoBehaviour
         collider.sharedMesh = mesh;
     }
 
+    public void HideShape()
+    {
+        ShapeObject.SetActive(false);
+    }
+
     private void OnDoubleClick(object sender, EventArgs eventArgs)
     {
         // Unregister while we're updating the color.
@@ -130,8 +130,17 @@ public class ShapeController : MonoBehaviour
 
         // Assign a random color.
         var filter = ShapeObject.GetComponent<MeshFilter>();
-        var color = UnityEngine.Random.ColorHSV();
-        filter.mesh.colors = Enumerable.Range(0, filter.mesh.vertexCount).Select(i => color).ToArray();
+        // Randomly decide to get 1 single color or multiple colors.
+        bool multiColor = Convert.ToBoolean(UnityEngine.Random.Range(0, 2));
+        if (multiColor)
+        {
+            filter.mesh.colors = Enumerable.Range(0, filter.mesh.vertexCount).Select(i => UnityEngine.Random.ColorHSV()).ToArray();
+        }
+        else
+        {
+            var color = UnityEngine.Random.ColorHSV();
+            filter.mesh.colors = Enumerable.Range(0, filter.mesh.vertexCount).Select(i => color).ToArray();
+        }
 
         // Register the double click event.
         ShapeObject.GetComponent<Shape>().OnDoubleClick += OnDoubleClick;
