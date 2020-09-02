@@ -12,10 +12,15 @@ public class MenuController : MonoBehaviour
     /// Reference to the ShapeController object.
     /// </summary>
     public ShapeController ShapeController;
+
+    /// <summary>
+    /// Reference to the WheelController object.
+    /// </summary>
+    public WheelController WheelController;
     #endregion
 
     #region Fields
-    private bool MenuVisibile;
+    private bool MenuVisible;
     #endregion
 
     #region Inspector Variables
@@ -38,11 +43,21 @@ public class MenuController : MonoBehaviour
     /// The square menu button.
     /// </summary>
     public GameObject Square;
+
+    /// <summary>
+    /// The pentagon menu button.
+    /// </summary>
+    public GameObject Pentagon;
+
+    /// <summary>
+    /// The wheel game menu button.
+    /// </summary>
+    public GameObject WheelGame;
     #endregion
 
     private void Start()
     {
-        MenuVisibile = false;
+        MenuVisible = false;
         UpdateMenu();
 
         // Register Events
@@ -50,40 +65,59 @@ public class MenuController : MonoBehaviour
         Hexagon.GetComponent<Button>().OnButtonClicked += OnHexagonClicked;
         Triangle.GetComponent<Button>().OnButtonClicked += OnTriangleClicked;
         Square.GetComponent<Button>().OnButtonClicked += OnSquareClicked;
+        Pentagon.GetComponent<Button>().OnButtonClicked += OnPentagonClicked;
+        WheelGame.GetComponent<Button>().OnButtonClicked += OnWheelClicked;
     }
 
     private void UpdateMenu()
     {
         // Toggle additional menu items on or off based on flag.
-        Hexagon.SetActive(MenuVisibile);
-        Triangle.SetActive(MenuVisibile);
-        Square.SetActive(MenuVisibile);
+        Hexagon.SetActive(MenuVisible);
+        Triangle.SetActive(MenuVisible);
+        Square.SetActive(MenuVisible);
+        Pentagon.SetActive(MenuVisible);
+        WheelGame.SetActive(MenuVisible);
     }
 
     private void OnMainMenuButtonClicked(object sender, EventArgs eventArgs)
     {
-        MenuVisibile = !MenuVisibile;
+        MenuVisible = !MenuVisible;
         UpdateMenu();
     }
 
     private void OnHexagonClicked(object sender, EventArgs eventArgs)
     {
-        ShapeController.CreateHexagon();
-        MenuVisibile = false;
-        UpdateMenu();
+        CreateShape(ShapeController.ShapeType.Hexagon);
     }
 
     private void OnTriangleClicked(object sender, EventArgs eventArgs)
     {
-        ShapeController.CreateTriangle();
-        MenuVisibile = false;
-        UpdateMenu();
+        CreateShape(ShapeController.ShapeType.Triangle);
     }
 
     private void OnSquareClicked(object sender, EventArgs eventArgs)
     {
-        ShapeController.CreateSquare();
-        MenuVisibile = false;
+        CreateShape(ShapeController.ShapeType.Square);
+    }
+
+    private void OnPentagonClicked(object sender, EventArgs eventArgs)
+    {
+        CreateShape(ShapeController.ShapeType.Pentagon);
+    }
+
+    private void CreateShape(ShapeController.ShapeType shapeType)
+    {
+        ShapeController.CreateShape(shapeType);
+        WheelController.Hide();
+        MenuVisible = false;
+        UpdateMenu();
+    }
+
+    private void OnWheelClicked(object sender, EventArgs eventArgs)
+    {
+        ShapeController.HideShape();
+        WheelController.Show();
+        MenuVisible = false;
         UpdateMenu();
     }
 }
